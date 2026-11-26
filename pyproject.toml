@@ -1,0 +1,34 @@
+[build-system]
+requires = ["hatchling>=1.26"]
+build-backend = "hatchling.build"
+
+[project]
+name = "velvet-tts"
+version = "0.7.0"
+description = "VelvetTTS: Pocket 18M/7M TTS, CPU/CUDA, batching, streaming, voice cloning, 24/48 kHz"
+readme = "README.md"
+license-files = ["THIRD_PARTY_NOTICES.md"]
+requires-python = ">=3.10,<3.14"
+dependencies = ["pocket-tts==4.0.1", "torch>=2.8,<2.9", "scipy>=1.5", "soundfile>=0.12", "pyyaml>=6"]
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "ruff>=0.11"]
+enhance = ["vocos @ git+https://github.com/langtech-bsc/vocos.git@matcha", "torchaudio>=2.8,<2.9"]
+
+[project.scripts]
+velvet-tts = "velvet_tts.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["velvet_tts"]
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.build.targets.sdist]
+include = ["velvet_tts", "tests", "README.md", "pyproject.toml", "THIRD_PARTY_NOTICES.md"]
+
+[tool.ruff]
+line-length = 100
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

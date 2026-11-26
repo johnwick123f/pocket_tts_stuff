@@ -1,0 +1,90 @@
+{
+  "version": "0.7.0",
+  "gpu": "NVIDIA GeForce RTX 4070 Ti SUPER",
+  "torch": "2.8.0+cu128",
+  "model": "18m",
+  "voice": "alba",
+  "flow_gain": 1.0,
+  "cpu_threads": 4,
+  "warm_median_runs": 3,
+  "measurements": [
+    {
+      "device": "cuda",
+      "batch": 1,
+      "codec": "24k",
+      "seconds": 0.0902790170000003,
+      "rtf": 0.010747502023809558,
+      "realtime": 93.04487664060379,
+      "audio_seconds": 8.4,
+      "warmup_seconds": 0.8008378359999995
+    },
+    {
+      "device": "cuda",
+      "batch": 1,
+      "codec": "48k",
+      "seconds": 0.09699072500001193,
+      "rtf": 0.011553850659150088,
+      "realtime": 86.55123123026075,
+      "audio_seconds": 8.394666666666666,
+      "warmup_seconds": 1.2098288409999896
+    },
+    {
+      "device": "cuda",
+      "batch": 32,
+      "codec": "24k",
+      "seconds": 0.404427038999998,
+      "rtf": 0.0015108601277644873,
+      "realtime": 661.8746379121336,
+      "audio_seconds": 267.68,
+      "warmup_seconds": 0.3290133320000024
+    },
+    {
+      "device": "cuda",
+      "batch": 32,
+      "codec": "48k",
+      "seconds": 0.48770220200000836,
+      "rtf": 0.0018219961121959307,
+      "realtime": 548.8485915564147,
+      "audio_seconds": 267.67466666666667,
+      "warmup_seconds": 0.5695951219999955
+    },
+    {
+      "device": "cpu",
+      "batch": 1,
+      "codec": "24k",
+      "seconds": 0.40395077599998785,
+      "rtf": 0.04675356203703563,
+      "realtime": 21.388744652393637,
+      "audio_seconds": 8.64,
+      "warmup_seconds": 0.16993712000000016
+    },
+    {
+      "device": "cpu",
+      "batch": 1,
+      "codec": "48k",
+      "seconds": 0.48947381799999334,
+      "rtf": 0.056652062268517746,
+      "realtime": 17.651608078453172,
+      "audio_seconds": 8.64,
+      "warmup_seconds": 0.3576345070000002
+    }
+  ],
+  "streaming": [
+    {
+      "device": "cuda",
+      "chunk_frames": 4,
+      "sample_rate": 24000,
+      "first_chunk_ms": 25.04034599999727,
+      "realtime": 21.710632925403218
+    },
+    {
+      "device": "cpu",
+      "chunk_frames": 4,
+      "sample_rate": 24000,
+      "first_chunk_ms": 31.93482300000028,
+      "realtime": 17.645715356033914
+    }
+  ],
+  "streaming_warm": true,
+  "voice_cloning_checked": true
+}
