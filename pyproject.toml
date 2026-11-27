@@ -1,34 +1,30 @@
-[build-system]
-requires = ["hatchling>=1.26"]
-build-backend = "hatchling.build"
-
 [project]
-name = "velvet-tts"
-version = "1.0.0"
-description = "VelvetTTS: Pocket 18M/7M TTS, CPU/CUDA, batching, streaming, voice cloning, 24/48 kHz"
-readme = "README.md"
-license-files = ["THIRD_PARTY_NOTICES.md"]
-requires-python = ">=3.10,<3.14"
-dependencies = ["pocket-tts==4.0.1", "torch>=2.8,<2.9", "scipy>=1.5", "soundfile>=0.12", "pyyaml>=6"]
+name = "velvet_tts"
+version = "0.1.0"
+requires-python = ">=3.10"
+dependencies = [
+    # Linux x86_64 (glibc - Ubuntu, Debian, Colab, etc.)
+    "llama-cpp-python @ https://github.com/abetlen/llama-cpp-python/releases/download/v0.3.38/llama_cpp_python-0.3.38-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl ; sys_platform == 'linux' and platform_machine == 'x86_64'",
 
-[project.optional-dependencies]
-dev = ["pytest>=8", "ruff>=0.11"]
-enhance = ["vocos @ git+https://github.com/langtech-bsc/vocos.git@matcha", "torchaudio>=2.8,<2.9"]
+    # Linux ARM64 (glibc - Raspberry Pi 64-bit, AWS Graviton, etc.)
+    "llama-cpp-python @ https://github.com/abetlen/llama-cpp-python/releases/download/v0.3.38/llama_cpp_python-0.3.38-py3-none-manylinux2014_aarch64.manylinux_2_17_aarch64.whl ; sys_platform == 'linux' and platform_machine == 'aarch64'",
 
-[project.scripts]
-velvet-tts = "velvet_tts.cli:main"
+    # Linux RISC-V
+    "llama-cpp-python @ https://github.com/abetlen/llama-cpp-python/releases/download/v0.3.38/llama_cpp_python-0.3.38-py3-none-linux_riscv64.whl ; sys_platform == 'linux' and platform_machine == 'riscv64'",
 
-[tool.hatch.build.targets.wheel]
-packages = ["velvet_tts"]
+    # macOS Apple Silicon (M1/M2/M3/M4)
+    "llama-cpp-python @ https://github.com/abetlen/llama-cpp-python/releases/download/v0.3.38/llama_cpp_python-0.3.38-py3-none-macosx_11_0_arm64.whl ; sys_platform == 'darwin' and platform_machine == 'arm64'",
 
-[tool.hatch.metadata]
-allow-direct-references = true
+    # Windows x64
+    "llama-cpp-python @ https://github.com/abetlen/llama-cpp-python/releases/download/v0.3.38/llama_cpp_python-0.3.38-py3-none-win_amd64.whl ; sys_platform == 'win32' and platform_machine == 'AMD64'",
 
-[tool.hatch.build.targets.sdist]
-include = ["velvet_tts", "tests", "README.md", "pyproject.toml", "THIRD_PARTY_NOTICES.md"]
+    # Fallback for Intel Macs or unsupported architectures (builds from PyPI)
+    "llama-cpp-python==0.3.38 ; (sys_platform == 'darwin' and platform_machine != 'arm64') or (sys_platform == 'linux' and platform_machine not in 'x86_64,aarch64,riscv64')",
 
-[tool.ruff]
-line-length = 100
-
-[tool.pytest.ini_options]
-testpaths = ["tests"]
+    # Other dependencies
+    "wetext",
+    "pedalboard",
+    "pocket-tts",
+    "miocodec @ git+https://github.com/Aratako/MioCodec.git",
+    "vocos @ git+https://github.com/langtech-bsc/vocos.git@matcha",
+]
