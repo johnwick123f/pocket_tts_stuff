@@ -1,4 +1,3 @@
-"""Reference-assisted llama.cpp inference with independent, truly batched sequences."""
 import ctypes
 import json
 from pathlib import Path
@@ -21,7 +20,13 @@ class SpeechTextNormalizer:
     )
 
     def __init__(self, model_path: str | Path, n_ctx=512, seed=42, verbose=False,
-                 max_batch_size=16, n_gpu_layers=-1, n_threads=8, normalizer=None):
+                 max_batch_size=None, n_gpu_layers=None, n_threads=8, normalizer=None):
+        # Auto-select GPU when available; n_gpu_layers=0 explicitly selects CPU.
+        if n_gpu_layers is None:
+            n_gpu_layers = -1 if lc.llama_supports_gpu_offload() else 0
+        self._gpu = n_gpu_layers != 0
+        if max_batch_size is None:
+            max_batch_size = 16 if self._gpu else 1
         self._lock = Lock()
         self._bridge = None
         self._model = self._ctx = self._batch = None
@@ -29,6 +34,8 @@ class SpeechTextNormalizer:
         self.n_ctx, self.max_batch_size, self.seed = n_ctx, max_batch_size, seed
         if n_ctx < 1 or max_batch_size < 1:
             raise ValueError('Context and batch sizes must be positive')
+        if not self._gpu and max_batch_size != 1:
+            raise ValueError('CPU inference requires max_batch_size=1')
         if n_gpu_layers and not lc.llama_supports_gpu_offload():
             raise RuntimeError('Install a CUDA-enabled llama-cpp-python build for GPU inference')
         lc.llama_backend_init()
@@ -45,10 +52,11 @@ class SpeechTextNormalizer:
         params.n_ctx = n_ctx * max_batch_size
         params.n_seq_max = max_batch_size
         params.n_batch = params.n_ubatch = 512
-        params.n_threads = params.n_threads_batch = n_threads
+        #params.n_threads = params.n_threads_batch = n_threads
         params.offload_kqv = params.op_offload = bool(n_gpu_layers)
-        params.flash_attn_type = 1  # LLAMA_FLASH_ATTN_TYPE_ENABLED
-        params.no_perf = False
+        #params.flash_attn_type = 1 if self._gpu else 0
+        params.flash_attn_type = 1 
+        #params.no_perf = False
         self._ctx = lc.llama_init_from_model(self._model, params)
         if not self._ctx:
             self.close()
@@ -127,12 +135,15 @@ class SpeechTextNormalizer:
         """Return outputs in order; larger lists are split into real GPU batches.
 
         references optionally accepts cached WeText outputs. Calls are serialized;
-        use this method rather than concurrent calls to achieve batching.
+        use this method rather than concurrent calls to achieve batching. CPU
+        mode accepts exactly one input per nonempty call.
         """
         texts = list(texts)
         if not texts:
             self.last_stats = {}
             return []
+        if not self._gpu and len(texts) > 1:
+            raise ValueError('CPU mode supports one input per call; use normalize()')
         if max_tokens < 1 or temperature < 0 or not all(isinstance(s, str) for s in texts):
             raise ValueError('Invalid text, temperature or token budget')
         with self._lock:
