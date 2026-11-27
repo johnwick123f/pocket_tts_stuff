@@ -24,7 +24,7 @@ class VelvetVoice:
         bundle: str = "small",   # Options: "small", "mini"
         codec: str = "48k",      # Options: "48k", "24k" (also accepts "48khz"/"24khz")
         device: Optional[str] = None,
-        batch_size: int = 4,
+        batch_size: int = 1,
         flow_gain: float = 1.1,
         cpu_threads: int = 4,
         cache_dir: str = "./velvet_models",
