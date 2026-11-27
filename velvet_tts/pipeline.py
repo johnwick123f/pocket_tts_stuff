@@ -7,7 +7,7 @@ from .engine import VelvetTTS
 from .text_normalizer.model_cpp import SpeechTextNormalizer
 from . import controls as control
 
-class VelvetTTSPipeline:
+class VelvetVoice:
     REPO_ID = "YaTharThShaRma999/tts_test"
 
     HF_FILES = {
