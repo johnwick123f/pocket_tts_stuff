@@ -2,6 +2,7 @@
 
 from ._version import __version__ as __version__
 from .engine import VelvetTTS
+from .pipeline import VelvetTTSPipeline
 from .results import GenerationResult, Profile
 
-__all__ = ["GenerationResult", "Profile", "VelvetTTS"]
+__all__ = ["GenerationResult", "Profile", "VelvetTTS", "VelvetTTSPipeline"]
