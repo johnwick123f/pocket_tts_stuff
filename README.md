@@ -6,9 +6,10 @@ VelvetVoice is a lightweight, high-speed Text-to-Speech model built on a 1-step 
 
 ## Main Features
 
-- Fast & Lightweight: Runs at 2x–20x realtime on CPU (60x–800x on GPU) in ~250 MB to <2 GB RAM.
+- Fast & Lightweight: Runs at 60x–800x realtime on GPU (2x–20x on CPU) in ~250 MB to <2 GB RAM.
 - Flexible Voice Control: Supports voice cloning, preset characters, and text-prompted voices (emotion, pitch, timbre, speed).
 - Neural Text Normalization: Converts complex symbols and formatting into natural speech.
+  
 ## Installation
 
 Install VelvetVoice directly from GitHub:
