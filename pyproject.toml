@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "velvet-tts"
-version = "0.7.0"
+version = "1.0.0"
 description = "VelvetTTS: Pocket 18M/7M TTS, CPU/CUDA, batching, streaming, voice cloning, 24/48 kHz"
 readme = "README.md"
 license-files = ["THIRD_PARTY_NOTICES.md"]
