@@ -1,3 +1,5 @@
+"""Granite reference retrieval -> cached MioCodec global -> optional controls."""
+
 from dataclasses import dataclass, replace
 from functools import lru_cache
 from pathlib import Path
@@ -10,21 +12,26 @@ MODEL = "ibm-granite/granite-embedding-small-english-r2"
 INDEX = Path(__file__).with_name("references.pt")
 
 
-def change_speed(audio, speed=1.0):
-    """WSOLA waveform time stretch: speed > 1 is faster; pitch stays unchanged."""
+def change_speed(audio, speed=1.0, *, pitch=0.0, sample_rate=24000):
+    """Pedalboard speed ratio and independent pitch shift in semitones."""
     if not math.isfinite(speed) or speed <= 0:
         raise ValueError("speed must be finite and positive")
-    if speed == 1.0:
+    if not math.isfinite(pitch):
+        raise ValueError("pitch must be finite (semitones)")
+    if speed == 1.0 and pitch == 0.0:
         return audio
-    from audiotsm import wsola
-    from audiotsm.io.array import ArrayReader, ArrayWriter
+    from pedalboard import time_stretch
 
     if audio.ndim != 1:
         raise ValueError("Expected mono audio shaped (samples,)")
-    reader = ArrayReader(audio.detach().float().cpu().numpy()[None])
-    writer = ArrayWriter(1)
-    wsola(1, speed=speed).run(reader, writer)
-    return torch.from_numpy(writer.data[0].copy()).to(audio)
+    output = time_stretch(
+        audio.detach().float().cpu().numpy()[None],
+        samplerate=sample_rate,
+        stretch_factor=speed,
+        pitch_shift_in_semitones=pitch,
+        high_quality=True,
+    )
+    return torch.from_numpy(output.reshape(-1).copy()).to(audio)
 
 
 @lru_cache(maxsize=2)
@@ -217,10 +224,12 @@ class VoiceLibrary:
         return self.select(prompt, **controls).global_embedding
 
     @torch.inference_mode()
-    def generate(self, prompt, *, content_tokens=None, speed=1.0, **controls):
-        """WSOLA speed ratio: >1 faster, <1 slower; 1 leaves audio unchanged."""
+    def generate(self, prompt, *, content_tokens=None, speed=1.0, pitch=0.0, **controls):
+        """Speed >1 is faster, <1 slower; pitch is an independent semitone shift."""
         if not math.isfinite(speed) or speed <= 0:
             raise ValueError("speed must be finite and positive")
+        if not math.isfinite(pitch):
+            raise ValueError("pitch must be finite (semitones)")
         match = self.select(prompt, **controls)
         tokens = content_tokens if content_tokens is not None else self.data["content"]
         if tokens is None:
@@ -236,7 +245,7 @@ class VoiceLibrary:
         )
         if not bool(torch.isfinite(audio).all()):
             raise RuntimeError("Decoder produced nonfinite audio")
-        audio = change_speed(audio, speed)
+        audio = change_speed(audio, speed, pitch=pitch, sample_rate=model.config.sample_rate)
         return VoiceResult(audio, model.config.sample_rate, match)
 
     @torch.inference_mode()
