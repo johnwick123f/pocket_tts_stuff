@@ -1,4 +1,15 @@
 
+    import control
+    g = control.apply(g, "angry", 1.0)
+    g = control.apply(g, "male", 0.5)
+    g = control.apply(g, {"female": 1.0, "sad": 1.0}, source="male")
+
+Input is a floating Tensor shaped (..., 128). Output keeps shape/device/dtype;
+input is never modified. Dicts apply gender first, then emotions in dict order.
+Emotion strengths are >=0 (above 1 extrapolates); gender strength is in [0,1].
+These weights target Aratako/MioCodec-25Hz-24kHz global embeddings.
+"""
+
 from collections.abc import Mapping
 from functools import lru_cache
 from pathlib import Path
