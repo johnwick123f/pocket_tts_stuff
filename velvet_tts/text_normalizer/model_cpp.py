@@ -67,20 +67,11 @@ class SpeechTextNormalizer:
     def _references(self, texts):
         if self.normalizer is None and self._bridge is None:
             try:
-                from tn.english.normalizer import Normalizer
+                from wetext import Normalizer
                 self.normalizer = Normalizer()
             except ModuleNotFoundError:
-                # Windows: reuse a persistent WSL WeText process, not one per request.
-                worker = ('import sys,json; from tn.english.normalizer import Normalizer; '
-                          'n=Normalizer(); '
-                          '\nfor line in sys.stdin:\n'
-                          ' try: print(json.dumps({"references":[n.normalize(s) for s in json.loads(line)]},ensure_ascii=False),flush=True)\n'
-                          ' except Exception as e: print(json.dumps({"error":str(e)}),flush=True)')
-                self._bridge = subprocess.Popen(
-                    ['wsl', '--', 'bash', '-lc', 'exec uv run --with WeTextProcessing python -u -c '
-                     + __import__('shlex').quote(worker)],
-                    stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-                    encoding='utf-8', creationflags=getattr(subprocess, 'CREATE_NO_WINDOW', 0))
+                print("BUG: WeText not found, please report to the developer.")
+
         if self.normalizer is not None:
             return [self.normalizer.normalize(s) for s in texts]
         self._bridge.stdin.write(json.dumps(texts)+'\n')
