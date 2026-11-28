@@ -3,6 +3,10 @@
 VelvetVoice is a lightweight, high-speed Text-to-Speech model built on a 1-step flow-matching architecture. It supports voice cloning, text-prompted voice generation, complex text normalization, and low-latency streaming.
 
 
+https://github.com/user-attachments/assets/ecc99b45-3a5e-4c1a-9415-f3c78d28869f
+
+
+
 
 ## Main Features
 
