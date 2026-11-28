@@ -28,3 +28,5 @@ dependencies = [
     "miocodec @ git+https://github.com/Aratako/MioCodec.git",
     "vocos @ git+https://github.com/langtech-bsc/vocos.git@matcha",
 ]
+[tool.setuptools.packages.find]
+exclude = ["information*"]
