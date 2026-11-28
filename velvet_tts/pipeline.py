@@ -30,6 +30,10 @@ class VelvetVoice:
         cache_dir: str = "./velvet_models",
     ):
         self.device = device or ("cuda" if torch.cuda.is_available() else "cpu")
+
+        if self.device = 'cuda:0':
+            batch_size = 32
+            
         self.cache_dir = cache_dir
         os.makedirs(self.cache_dir, exist_ok=True)
 
